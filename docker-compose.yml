@@ -1,0 +1,33 @@
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+  
+  api:
+    build: ./api
+    container_name: api
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - QUEUE_KEY=task_queue
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+  
+
+  worker:
+    build: ./worker
+    container_name: worker
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - QUEUE_KEY=task_queue
+      - MODEL_PATH=/app/model/linear_model.pth
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./model:/app/model:ro
+    depends_on:
+      - redis

@@ -1,0 +1,4 @@
+redis==5.0.8
+joblib==1.4.2
+numpy==2.0.1
+torch==2.7.1
